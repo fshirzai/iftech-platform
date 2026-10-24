@@ -58,3 +58,7 @@ The dashboard route is intentionally a *design preview*, not a real management d
 ## Production notes
 
 Set `WEB_ORIGIN`, `NEXT_PUBLIC_API_URL`, `MONGODB_URI` appropriately. Do not commit `.env` files. Place both apps behind TLS and a reverse proxy. Restrict MongoDB network access, use offsite backups, and host demo apps in isolated environments.
+
+
+## V2 Expanded route pack
+See `V2_STATUS.md` for exact implementation status. Portal route examples: `/en/admin/overview`, `/en/client/overview`, `/en/staff/overview`, `/en/sales/overview`, `/en/projects/overview`, `/en/finance/overview`, `/en/support/overview`, `/en/content/overview`. Public routes: `/en/products`, `/en/demos`, `/en/contact`, etc. All portal routes are **unprotected UI previews**. Do not deploy them as real dashboards until authentication and RBAC are implemented.

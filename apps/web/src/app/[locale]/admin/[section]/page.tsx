@@ -1,0 +1,5 @@
+import {notFound} from "next/navigation";
+import {PortalShell} from "../../../../components/PortalShell";
+import {portalSections} from "../../../../lib/site-data";
+export function generateStaticParams(){return ["en","ps","fa"].flatMap(locale=>portalSections.admin.nav.map(section=>({locale,section})));}
+export default async function Page({params}:{params:Promise<{locale:string;section:string}>}){const {locale,section}=await params;if(!["en","ps","fa"].includes(locale)||!portalSections.admin.nav.includes(section as never))notFound();return <PortalShell locale={locale} portal="admin" section={section}/>}
