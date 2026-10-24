@@ -1,22 +1,34 @@
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import { env } from "./config/env.js";
-import { healthRouter } from "./modules/health/health.routes.js";
-import { requestRouter } from "./modules/requests/request.routes.js";
-import { notFound, errorHandler } from "./middleware/error-handler.js";
+import 'dotenv/config';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import { env } from './config/env.js';
+import { healthRouter } from './modules/health/health.routes.js';
+import { requestRouter } from './modules/requests/request.routes.js';
+import { authRouter } from './modules/auth.js';
+import { resourceRouter } from './modules/resources.js';
+import { paymentRouter } from './modules/payments.js';
+import { adminRouter } from './modules/admin.js';
+import { notFound,errorHandler } from './middleware/error-handler.js';
 
-export const app = express();
-app.disable("x-powered-by");
-if (env.TRUST_PROXY === "true") app.set("trust proxy", 1);
+export const app=express();
+app.disable('x-powered-by');
+app.set('trust proxy',1);
 app.use(helmet());
-const origins = (env.WEB_ORIGIN || "http://localhost:3000")
-  .split(",")
-  .map((value) => value.trim())
-  .filter(Boolean);
-app.use(cors({ origin: origins }));
-app.use(express.json({ limit: "40kb" }));
-app.use("/api/v1/health", healthRouter);
-app.use("/api/v1/requests", requestRouter);
+const origins=(env.WEB_ORIGIN||'http://localhost:3000').split(',').map(x=>x.trim()).filter(Boolean);
+app.use(cors({origin:(origin,cb)=>!origin||origins.includes(origin)?cb(null,true):cb(new Error('Origin not allowed')),credentials:true}));
+// Browsers cannot submit cookie-authenticated changes from an untrusted origin.
+app.use((req,res,next)=>{if(['POST','PUT','PATCH','DELETE'].includes(req.method)&&req.headers.origin&&!origins.includes(req.headers.origin))return res.status(403).json({error:'Origin not allowed'});next();});
+app.use(express.json({limit:'100kb'}));
+app.use(cookieParser());
+app.use('/api/v1/auth',rateLimit({windowMs:15*60000,limit:20,standardHeaders:'draft-7',legacyHeaders:false}),authRouter);
+app.use('/api/v1/health',healthRouter);
+app.use('/api/v1/requests',requestRouter);
+app.use('/api/v1/payments',paymentRouter);
+app.use('/api/v1/admin',adminRouter);
+app.use('/api/v1/data',resourceRouter);
 app.use(notFound);
 app.use(errorHandler);
+export default app;
