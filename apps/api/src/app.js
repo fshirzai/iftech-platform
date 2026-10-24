@@ -11,6 +11,7 @@ import { authRouter } from './modules/auth.js';
 import { resourceRouter } from './modules/resources.js';
 import { paymentRouter } from './modules/payments.js';
 import { adminRouter } from './modules/admin.js';
+import { demoSeedRouter } from './modules/demo-seed.js';
 import { notFound,errorHandler } from './middleware/error-handler.js';
 
 export const app=express();
@@ -28,6 +29,7 @@ app.use('/api/v1/health',healthRouter);
 app.use('/api/v1/requests',requestRouter);
 app.use('/api/v1/payments',paymentRouter);
 app.use('/api/v1/admin',adminRouter);
+app.use('/api/v1/admin',demoSeedRouter);
 app.use('/api/v1/data',resourceRouter);
 app.use(notFound);
 app.use(errorHandler);

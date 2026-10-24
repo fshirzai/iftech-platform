@@ -3,6 +3,7 @@ import {useState} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {api} from '../lib/api';
+import {ThemePicker} from './ThemePicker';
 type Mode='login'|'register'|'verify'|'forgot'|'reset-password';
 export default function Account({locale,mode}:{locale:string;mode:Mode}){
  const router=useRouter(),[busy,setBusy]=useState(false),[error,setError]=useState(''),[success,setSuccess]=useState('');
@@ -14,7 +15,7 @@ export default function Account({locale,mode}:{locale:string;mode:Mode}){
  if(mode==='login')router.push(`/${locale}/${result.user?.role==='CLIENT'?'client':'admin'}/overview`);
  else setSuccess(result.message||'Success.');
  }catch(e){setError(e instanceof Error?e.message:'Unable to complete request');}finally{setBusy(false);}}
- return <main className="ifaccount"><Link href={`/${locale}`} className="ifaccount-back">✳ IFTECH / RETURN TO WEBSITE</Link><div className="ifaccount-card"><div className="ifaccount-label">SECURE WORKSPACE ACCESS</div><h1>{titles[mode]}</h1><p>{mode==='login'?'Sign in to manage your projects, proposals, and invoices.':'Your IFTECH account connects you to every stage of your project.'}</p><form onSubmit={submit}>
+ return <main className="ifaccount"><div className="ifaccount-theme"><ThemePicker/></div><Link href={`/${locale}`} className="ifaccount-back">✳ IFTECH / RETURN TO WEBSITE</Link><div className="ifaccount-card"><div className="ifaccount-label">SECURE WORKSPACE ACCESS</div><h1>{titles[mode]}</h1><p>{mode==='login'?'Sign in to manage your projects, proposals, and invoices.':'Your IFTECH account connects you to every stage of your project.'}</p><form onSubmit={submit}>
  {mode==='register'&&<label>Full name<input name="name" required minLength={2} autoComplete="name"/></label>}
  {mode!=='verify'&&<label>Email address<input name="email" type="email" required autoComplete="email" defaultValue={typeof window!=='undefined'?new URLSearchParams(location.search).get('email')||'':''}/></label>}
  {['login','register','reset-password'].includes(mode)&&<label>Password<input name="password" type="password" required minLength={mode==='login'?1:12} autoComplete={mode==='login'?'current-password':'new-password'}/></label>}
