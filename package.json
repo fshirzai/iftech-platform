@@ -1,0 +1,16 @@
+{
+  "name": "iftech-platform",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n WEB,API -c cyan,magenta \"npm run dev -w @iftech/web\" \"npm run dev -w @iftech/api\"",
+    "build": "npm run build -w @iftech/web",
+    "start:web": "npm run start -w @iftech/web",
+    "start:api": "npm run start -w @iftech/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

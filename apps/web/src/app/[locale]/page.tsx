@@ -1,0 +1,1 @@
+import Studio from "@/components/Studio";export default async function Page({params}:{params:Promise<{locale:string}>}){const {locale}=await params;return <Studio initialLocale={(["en","ps","fa"].includes(locale)?locale:"en") as "en"|"ps"|"fa"}/> }
