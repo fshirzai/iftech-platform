@@ -42,7 +42,30 @@ export function PortalShell({locale,portal,section}:{locale:string;portal:string
  const links=nav[portal]||nav.client;
  const authorized=user && (user.role==='ADMIN'||workspaceFor(user.role)===portal||(user.role==='SALES'&&portal==='projects'));
  useEffect(()=>{api<{user:User}>('/auth/me').then(x=>{setUser(x.user);if(workspaceFor(x.user.role)!==portal && x.user.role!=='ADMIN')router.replace(`/${locale}/${workspaceFor(x.user.role)}/overview`);}).catch(()=>router.replace(`/${locale}/login`));},[portal,locale,router]);
- async function reload(){if(!user)return;setLoading(true);setError('');try{if(resource){const r=resource==='users'?await api<{items:Doc[]}>('/admin/users'):await api<{items:Doc[];total:number}>(`/data/${resource}?page=${page}`);setItems(r.items||[]);setTotal('total' in r?r.total:r.items.length);}else{setItems([]);setTotal(0)}}catch(e){setError(e instanceof Error?e.message:'Unable to load records')}finally{setLoading(false)}}
+ async function reload() {
+  if (!user) return;
+  setLoading(true);
+  setError('');
+  try {
+    if (!resource) {
+      setItems([]);
+      setTotal(0);
+    } else if (resource === 'users') {
+      const response = await api<{ items: Doc[] }>('/admin/users');
+      const records = response.items ?? [];
+      setItems(records);
+      setTotal(records.length);
+    } else {
+      const response = await api<{ items: Doc[]; total: number }>(`/data/${resource}?page=${page}`);
+      setItems(response.items ?? []);
+      setTotal(response.total ?? response.items?.length ?? 0);
+    }
+  } catch (error) {
+    setError(error instanceof Error ? error.message : 'Unable to load records');
+  } finally {
+    setLoading(false);
+  }
+}
  useEffect(()=>{if(user&&authorized)void reload();},[user,resource,page]);
  async function createRecord(e:React.FormEvent<HTMLFormElement>){e.preventDefault();setBusy(true);setError('');const fd=new FormData(e.currentTarget);const fields=schema[resource]||[];const obj:Doc={};for(const f of fields){const v=fd.get(f.name);if(f.type==='checkbox')obj[f.name]=v==='on';else if(v!==null&&String(v).trim()){obj[f.name]=f.type==='number'?Number(v):String(v).trim();}}try{await api(resource==='users'?'/admin/users':`/data/${resource}`,{method:'POST',body:JSON.stringify(obj)});setCreate(false);await reload();}catch(e){setError(e instanceof Error?e.message:'Unable to create record')}finally{setBusy(false)}}
  async function status(id:string,next:string){setBusy(true);setError('');try{await api(`/data/${resource}/${id}/status`,{method:'PATCH',body:JSON.stringify({status:next})});await reload();}catch(e){setError(e instanceof Error?e.message:'Unable to update status')}finally{setBusy(false)}}
