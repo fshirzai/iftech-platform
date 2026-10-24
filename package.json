@@ -8,9 +8,14 @@
     "dev": "concurrently -n WEB,API -c cyan,magenta \"npm run dev -w @iftech/web\" \"npm run dev -w @iftech/api\"",
     "build": "npm run build -w @iftech/web",
     "start:web": "npm run start -w @iftech/web",
-    "start:api": "npm run start -w @iftech/api"
+    "start:api": "npm run start -w @iftech/api",
+    "format": "prettier --write \"apps/**/*.{js,jsx,ts,tsx,json,css,md}\" \"*.{json,md}\" \"docs/**/*.md\"",
+    "format:check": "prettier --check \"apps/**/*.{js,jsx,ts,tsx,json,css,md}\" \"*.{json,md}\" \"docs/**/*.md\"",
+    "test": "npm run test -w @iftech/api",
+    "typecheck": "tsc --noEmit -p apps/web/tsconfig.json"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "prettier": "^3.4.2"
   }
 }
