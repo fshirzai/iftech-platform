@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {definitions} from '../src/modules/platform.js';
+import {definitions, Project} from '../src/modules/platform.js';
 
 test('all core business modules are registered',()=>{
  for(const name of ['products','services','portfolio','requests','proposals','projects','tasks','milestones','changes','invoices','tickets','messages','notifications'])
@@ -14,4 +14,8 @@ test('invoice validation blocks negative amounts and unknown fields',()=>{
 });
 test('proposals require a request and nonnegative price',()=>{
  assert.equal(definitions.proposals.schema.safeParse({request:'507f1f77bcf86cd799439011',title:'Project proposal',scope:'Detailed agreed scope',price:1000}).success,true);
+});
+
+test('Project model initializes before its unique proposal index is registered', () => {
+ assert.ok(Project.schema.indexes().some(([fields, options]) => fields.proposal === 1 && options.unique === true));
 });

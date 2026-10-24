@@ -38,13 +38,13 @@ export const Proposal = create('Proposal', {
   feedback: String, sentAt: Date, acceptedAt: Date,
 });
 Proposal.schema.index({ request: 1, version: 1 }, { unique: true });
-Project.schema.index({ proposal: 1 }, { unique: true, sparse: true });
 export const Project = create('Project', {
   client: obj('User', true), proposal: obj('Proposal'), title: text(true), description: String,
   manager: obj('User'), members: [obj('User')],
   status: { type: String, enum: ['PLANNING','IN_PROGRESS','TESTING','CLIENT_REVIEW','DELIVERED','CLOSED'], default: 'PLANNING' },
   dueDate: Date, progress: { type: Number, default: 0, min: 0, max: 100 },
 });
+Project.schema.index({ proposal: 1 }, { unique: true, sparse: true });
 export const Task = create('Task', {
   project: obj('Project', true), title: text(true), description: String, assignee: obj('User'),
   status: { type: String, enum: ['TODO','IN_PROGRESS','REVIEW','DONE'], default: 'TODO' }, dueDate: Date,
