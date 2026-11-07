@@ -12,7 +12,7 @@ export default function Account({locale,mode}:{locale:string;mode:Mode}){
  const query=new URLSearchParams(location.search);
  if(mode==='verify'||mode==='reset-password'){values.token=query.get('token')||String(values.token||'');values.email=query.get('email')||String(values.email||'');}
  try{const result=await api<{user?:{role:string};message?:string}>(`/auth/${mode==='reset-password'?'reset':mode}`,{method:'POST',body:JSON.stringify(values)});
- if(mode==='login')router.push(`/${locale}/${result.user?.role==='CLIENT'?'client':'admin'}/overview`);
+ if(mode==='login'){const destination:Record<string,string>={ADMIN:'admin',CLIENT:'client',SALES:'sales',DEVELOPER:'staff',PROJECT_MANAGER:'projects',FINANCE:'finance',SUPPORT:'support',CONTENT_MANAGER:'content'};router.push(`/${locale}/${destination[result.user?.role||'']||'client'}/overview`);}
  else setSuccess(result.message||'Success.');
  }catch(e){setError(e instanceof Error?e.message:'Unable to complete request');}finally{setBusy(false);}}
  return <main className="ifaccount"><div className="ifaccount-theme"><ThemePicker/></div><Link href={`/${locale}`} className="ifaccount-back">✳ IFTECH / RETURN TO WEBSITE</Link><div className="ifaccount-card"><div className="ifaccount-label">SECURE WORKSPACE ACCESS</div><h1>{titles[mode]}</h1><p>{mode==='login'?'Sign in to manage your projects, proposals, and invoices.':'Your IFTECH account connects you to every stage of your project.'}</p><form onSubmit={submit}>

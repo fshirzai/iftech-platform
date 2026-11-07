@@ -11,6 +11,7 @@ export const themes: { value: ThemeName; label: string; color: string }[] = [
 ];
 export function applyTheme(value: ThemeName) {
   document.documentElement.dataset.theme = value;
+  document.documentElement.style.colorScheme = value === 'daylight' ? 'light' : 'dark';
   try { window.localStorage.setItem("iftech-theme", value); } catch {}
 }
 export function ThemePicker({ className = "" }: { className?: string }) {
